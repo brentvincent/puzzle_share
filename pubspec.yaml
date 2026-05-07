@@ -1,0 +1,21 @@
+name: puzzle_share
+description: Shared share-stack primitives across Ninjoku, Pixdojo, and Crowns — text format, emoji grids, UTM-tagged URLs, deep-link codec, multi-channel launcher, off-screen widget→PNG canvas, channel button row.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  share_plus: ^11.1.0
+  url_launcher: ^6.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
