@@ -65,7 +65,10 @@ class ShareChannelRow extends StatelessWidget {
             label: 'Copy',
             color: iconColor,
             onTap: () async {
-              await ShareLauncher.copyToClipboard('$text\n$url');
+              // Copy text only — no URL. Paste destinations like iMessage
+              // and WhatsApp don't benefit from a link in the body; the
+              // URL is for social platforms that render OG previews.
+              await ShareLauncher.copyToClipboard(text);
               onShared?.call('copy');
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(

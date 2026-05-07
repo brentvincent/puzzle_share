@@ -17,7 +17,7 @@ void main() {
       );
     });
 
-    test('standard template produces 4-line output', () {
+    test('standard template produces 4-line output with url', () {
       final out = ShareTextTemplate.standard(
         brand: 'Ninjoku',
         stars: 3,
@@ -31,6 +31,18 @@ void main() {
       expect(lines.first, 'Ninjoku \u{1F3C6} \u{2B50}\u{2B50}\u{2B50}');
       expect(lines[1], 'Hard · 04:12 · 0 hints');
       expect(lines.last, 'https://ninjoku.com/p/v1:abc');
+    });
+
+    test('omits url line when url is null (clipboard copy case)', () {
+      final out = ShareTextTemplate.standard(
+        brand: 'Ninjoku',
+        stars: 3,
+        difficulty: 'Hard',
+        elapsed: const Duration(minutes: 4, seconds: 12),
+        hintsUsed: 0,
+      );
+      expect(out.contains('http'), isFalse);
+      expect(out.split('\n').last, 'Hard · 04:12 · 0 hints');
     });
 
     test('streak appends a line with fire emoji', () {

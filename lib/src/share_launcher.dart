@@ -23,20 +23,21 @@ class ShareLauncher {
     String? subject,
   }) async {
     try {
-      final params = ShareParams(
-        text: text,
-        subject: subject,
-        files: imageBytes == null
-            ? null
-            : [
-                XFile.fromData(
-                  imageBytes,
-                  name: imageName ?? 'share.png',
-                  mimeType: 'image/png',
-                ),
-              ],
-      );
-      final result = await SharePlus.instance.share(params);
+      if (imageBytes != null) {
+        final file = XFile.fromData(
+          imageBytes,
+          name: imageName ?? 'share.png',
+          mimeType: 'image/png',
+        );
+        final result = await Share.shareXFiles(
+          [file],
+          text: text,
+          subject: subject,
+        );
+        return result.status == ShareResultStatus.success ||
+            result.status == ShareResultStatus.unavailable;
+      }
+      final result = await Share.share(text, subject: subject);
       return result.status == ShareResultStatus.success ||
           result.status == ShareResultStatus.unavailable;
     } catch (_) {
@@ -71,11 +72,8 @@ class ShareLauncher {
   }
 
   /// Whether the current platform can render a native share sheet
-  /// with image attachments. Used by call sites to decide whether to
-  /// generate a PNG up-front.
-  static bool get supportsImageShare {
-    // Web supports text-only share via Web Share API; image attach is
-    // spotty. Native (iOS/Android/macOS) supports it cleanly.
-    return !kIsWeb;
-  }
+  /// with image attachments. Always true — share_plus attempts file share
+  /// on every platform (including web via Web Share Level 2) and falls
+  /// back to text-only share if the platform rejects the file.
+  static bool get supportsImageShare => true;
 }

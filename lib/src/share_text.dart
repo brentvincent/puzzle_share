@@ -16,6 +16,10 @@ class ShareTextTemplate {
   static const _fire = '\u{1F525}'; // 🔥
 
   /// Build the standard share text.
+  ///
+  /// Pass [url] when sharing to a social/native channel that needs a link.
+  /// Omit it (or pass null) for clipboard copy — the recipient doesn't need
+  /// a URL appended to a paste into iMessage or WhatsApp.
   static String standard({
     required String brand,
     required int stars,
@@ -24,7 +28,7 @@ class ShareTextTemplate {
     int? hintsUsed,
     int? streakDays,
     String? emojiGrid,
-    required String url,
+    String? url,
   }) {
     final starString = _star * stars.clamp(0, 5);
     final headerLine = '$brand $_trophy $starString';
@@ -45,7 +49,7 @@ class ShareTextTemplate {
       if (statsLine.isNotEmpty) '$statsLine$streakLine'
       else if (streakLine.isNotEmpty) streakLine.trimLeft(),
       if (emojiGrid != null && emojiGrid.isNotEmpty) emojiGrid,
-      url,
+      if (url != null && url.isNotEmpty) url,
     ].join('\n');
 
     return '$headerLine\n$body';
