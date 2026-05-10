@@ -67,7 +67,7 @@ class EmojiGridSummary {
     return false;
   }
 
-  /// Two-coloured bare row using the secondary palette (yellow). Used
+    /// Two-coloured bare row using the secondary palette (yellow). Used
   /// by Pixdojo's region-mastery shares where the warm tones read more
   /// like paint than logic — but uses the same tier scale.
   static String renderRowWarm(int tier) {
@@ -81,5 +81,70 @@ class EmojiGridSummary {
       default:
         return '$_black$_black$_black';
     }
+  }
+}
+
+/// Wordle-style 9×9 emoji grid encoding a completed sudoku solve.
+///
+/// ⬜ = given clue (pre-filled by the puzzle)
+/// 🟦 = player-placed digit (the solver's own work)
+/// 🟨 = hint-placed digit (got a nudge here)
+///
+/// The grid is grouped into 3×3 boxes with a space between box-columns
+/// and a blank line between box-rows — mirrors the visual structure of
+/// the physical grid so it reads as a sudoku at a glance.
+///
+/// Example output:
+/// ```
+/// ⬜🟦🟦 🟦⬜🟦 🟦🟦⬜
+/// 🟦🟦⬜ ⬜🟦🟦 🟦⬜🟦
+/// 🟦⬜🟦 🟦🟦⬜ ⬜🟦🟦
+///
+/// 🟦⬜🟦 ⬜🟦🟦 🟦🟦⬜
+/// ...
+/// ```
+class SudokuEmojiGrid {
+  static const _given = '\u{2B1C}';  // ⬜  pre-filled clue
+  static const _player = '\u{1F7E6}'; // 🟦  player solved
+  static const _hint = '\u{1F7E8}';  // 🟨  hint placed
+
+  /// Build the emoji string from flat lists of booleans.
+  ///
+  /// [gridSize] — 4, 6, or 9.
+  /// [isGiven]  — row-major flat list of length gridSize².
+  /// [isHint]   — row-major flat list of length gridSize² (may be all false).
+  ///
+  /// For non-9×9 grids (4×4 / 6×6) the box-grouping adapts automatically:
+  /// 4×4 → 2×2 boxes, 6×6 → 2×3 boxes.
+  static String build({
+    required int gridSize,
+    required List<bool> isGiven,
+    required List<bool> isHint,
+  }) {
+    assert(isGiven.length == gridSize * gridSize);
+    assert(isHint.length == gridSize * gridSize);
+
+    final boxRows = gridSize == 4 ? 2 : gridSize == 6 ? 2 : 3;
+    final boxCols = gridSize ~/ boxRows;
+    final rows = <String>[];
+
+    for (int r = 0; r < gridSize; r++) {
+      if (r > 0 && r % boxRows == 0) rows.add(''); // blank line between box-rows
+      final cols = <String>[];
+      for (int c = 0; c < gridSize; c++) {
+        if (c > 0 && c % boxCols == 0) cols.add(' '); // space between box-cols
+        final idx = r * gridSize + c;
+        if (isGiven[idx]) {
+          cols.add(_given);
+        } else if (isHint[idx]) {
+          cols.add(_hint);
+        } else {
+          cols.add(_player);
+        }
+      }
+      rows.add(cols.join(''));
+    }
+
+    return rows.join('\n');
   }
 }

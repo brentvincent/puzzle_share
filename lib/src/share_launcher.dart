@@ -66,6 +66,15 @@ class ShareLauncher {
     return launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
+  /// Open WhatsApp share with pre-filled text (Sprint 230).
+  /// Uses the universal wa.me deep link which works on web + mobile.
+  static Future<bool> openWhatsAppIntent({required String text}) async {
+    final uri = Uri.parse(
+      'https://wa.me/?text=${Uri.encodeQueryComponent(text)}',
+    );
+    return launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
   /// Copy plain text to the system clipboard.
   static Future<void> copyToClipboard(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
